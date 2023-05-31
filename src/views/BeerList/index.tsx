@@ -7,10 +7,11 @@ import { useNavigate } from 'react-router-dom';
 
 const BeerList = () => {
   const navigate = useNavigate();
-  const [beerList, setBeerList] = useState<Array<Beer>>([]);
+  const [beerList, setBeerList] = useState<Beer[]>([]);
 
-  // eslint-disable-next-line
-  useEffect(fetchData.bind(this, setBeerList), []);
+  useEffect((): void => {
+    fetchData(setBeerList);
+  }, []);
 
   const onBeerClick = (id: string) => navigate(`/beer/${id}`);
 
@@ -22,14 +23,14 @@ const BeerList = () => {
         </header>
         <main>
           <List>
-            {beerList.map((beer) => (
-              <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id)}>
+            {beerList.map(({ id, name, brewery_type}) => (
+              <ListItemButton key={id} onClick={() => onBeerClick(id)}>
                 <ListItemAvatar>
                   <Avatar>
                     <SportsBar />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={beer.name} secondary={beer.brewery_type} />
+                <ListItemText primary={name} secondary={brewery_type} />
               </ListItemButton>
             ))}
           </List>

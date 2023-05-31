@@ -7,8 +7,9 @@ const Beer = () => {
   const { id } = useParams();
   const [beer, setBeer] = useState<IBeer>();
 
-  // eslint-disable-next-line
-  useEffect(fetchData.bind(this, setBeer, id), [id]);
+  useEffect(() => {
+    fetchData(setBeer, id);
+  }, [id]);
 
   return (
     <article>

@@ -22,7 +22,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function ResponsiveDrawer(props: Props) {
+export default function ResponsiveDrawer({ children }: Props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -99,7 +99,7 @@ export default function ResponsiveDrawer(props: Props) {
         }}
       >
         <Toolbar />
-        {props.children}
+        {children}
       </Box>
     </Box>
   );
