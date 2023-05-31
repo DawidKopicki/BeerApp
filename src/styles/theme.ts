@@ -1,13 +1,13 @@
 import { createTheme } from '@mui/material/styles';
-import { green, blue } from '@mui/material/colors';
+import { amber, brown } from '@mui/material/colors';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: blue[800],
+      main: amber[600],
     },
     secondary: {
-      main: green[500],
+      main: brown[700],
     },
   },
   components: {
@@ -17,6 +17,15 @@ const theme = createTheme({
           textDecoration: 'none',
         },
       },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          '&.MuiLink-root': {
+            color: brown[700],
+          },
+        },
+      }
     },
   },
 });

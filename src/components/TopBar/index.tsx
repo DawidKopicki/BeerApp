@@ -6,13 +6,13 @@ interface Props {
   handleDrawerToggle: () => void;
 }
 
-const TopBar = (props: Props) => {
+const TopBar = ({ drawerWidth, handleDrawerToggle }: Props) => {
   return (
     <AppBar
       position="fixed"
       sx={{
-        width: { sm: `calc(100% - ${props.drawerWidth}px)` },
-        ml: { sm: `${props.drawerWidth}px` },
+        width: { sm: `calc(100% - ${drawerWidth}px)` },
+        ml: { sm: `${drawerWidth}px` },
       }}
     >
       <Toolbar>
@@ -20,13 +20,13 @@ const TopBar = (props: Props) => {
           color="inherit"
           aria-label="open drawer"
           edge="start"
-          onClick={props.handleDrawerToggle}
+          onClick={handleDrawerToggle}
           sx={{ mr: 2, display: { sm: 'none' } }}
         >
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div">
-          V
+          BeerApp
         </Typography>
       </Toolbar>
     </AppBar>

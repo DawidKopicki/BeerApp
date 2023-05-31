@@ -1,17 +1,70 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { fetchData } from './utils';
 import { Beer } from '../../types';
 import { Link as RouterLink } from 'react-router-dom';
 import { Button, Checkbox, Paper, TextField, Link } from '@mui/material';
 import styles from './Home.module.css';
+import { SAVED_BEERS_KEY } from './constants'
 
 const Home = () => {
-  const [beerList, setBeerList] = useState<Array<Beer>>([]);
-  const [savedList, setSavedList] = useState<Array<Beer>>([]);
+  const [beerList, setBeerList] = useState<Beer[]>([]);
+  const [savedList, setSavedList] = useState<{ [key: string]: Beer }>({});
+  const [filteredBeerList, setFilteredBeerList] = useState<Beer[]>(beerList)
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  // eslint-disable-next-line
-  useEffect(fetchData.bind(this, setBeerList), []);
+  useEffect(() => {
+    fetchData(setBeerList);
+  }, []);
 
+  useEffect(() => {
+    const initialSavedList = () => {
+      const data = JSON.parse(localStorage.getItem(SAVED_BEERS_KEY) || '{}');
+      setSavedList(data);
+    };
+
+    initialSavedList();
+  }, []);
+
+  useEffect(() => {
+    setFilteredBeerList(
+        beerList.filter((beer: Beer) =>
+          beer.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+  }, [beerList, searchTerm]);
+
+  const handleBeerSelect = (
+    e: ChangeEvent<HTMLInputElement>,
+    beer: Beer
+  ) => {
+    const newSavedList = { ...savedList };
+  
+    if (e.target.checked) {
+      newSavedList[beer.id] = beer;
+    } else {
+      delete newSavedList[beer.id];
+    }
+  
+    setSavedList(newSavedList);
+    localStorage.setItem(SAVED_BEERS_KEY, JSON.stringify(newSavedList));
+  };
+
+  const removeSavedBeers = () => {
+    localStorage.setItem(SAVED_BEERS_KEY, JSON.stringify({}));
+    setSavedList({});
+  };
+
+  const handleReloadClick = () => {
+    fetchData((updatedBeerList: Beer[]) => {
+      const filteredList = updatedBeerList.filter(
+        (beer: Beer) => !Object.keys(savedList).includes(beer.id)
+      );
+      setBeerList(filteredList);
+    });
+    setSearchTerm('');
+  };
+
+  
   return (
     <article>
       <section>
@@ -19,13 +72,20 @@ const Home = () => {
           <Paper>
             <div className={styles.listContainer}>
               <div className={styles.listHeader}>
-                <TextField label='Filter...' variant='outlined' />
-                <Button variant='contained'>Reload list</Button>
+                <TextField
+                  label='Search by name'
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Button variant='contained' onClick={handleReloadClick}>Reload list</Button>
               </div>
               <ul className={styles.list}>
-                {beerList.map((beer, index) => (
+                {filteredBeerList.map((beer, index) => (
                   <li key={index.toString()}>
-                    <Checkbox />
+                    <Checkbox 
+                      checked={Object.keys(savedList).includes(beer.id)}
+                      onChange={(e) => handleBeerSelect(e, beer)}
+                    />
                     <Link component={RouterLink} to={`/beer/${beer.id}`}>
                       {beer.name}
                     </Link>
@@ -38,21 +98,24 @@ const Home = () => {
           <Paper>
             <div className={styles.listContainer}>
               <div className={styles.listHeader}>
-                <h3>Saved items</h3>
-                <Button variant='contained' size='small'>
-                  Remove all items
+                <h3>Favourite beers</h3>
+                <Button variant="contained" size="small" onClick={removeSavedBeers}>
+                  Remove all beers
                 </Button>
               </div>
               <ul className={styles.list}>
-                {savedList.map((beer, index) => (
+                {Object.values(savedList).map((beer, index) => (
                   <li key={index.toString()}>
-                    <Checkbox />
+                    <Checkbox
+                      checked={true}
+                      onChange={(e) => handleBeerSelect(e, beer)}
+                    />
                     <Link component={RouterLink} to={`/beer/${beer.id}`}>
                       {beer.name}
                     </Link>
                   </li>
                 ))}
-                {!savedList.length && <p>No saved items</p>}
+                {!Object.values(savedList).length && <p>No favourite beers</p>}
               </ul>
             </div>
           </Paper>
