@@ -12,4 +12,6 @@ type TYPE =
 
 type SORT = 'asc' | 'desc';
 
-export type { TYPE, SORT };
+type FIELD = 'name' | 'brewery_type';
+
+export type { FIELD, SORT, TYPE };

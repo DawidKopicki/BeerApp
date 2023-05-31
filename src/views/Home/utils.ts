@@ -7,7 +7,7 @@ const getRandomSelection = (array: Beer[], count: number) => {
   return shuffledArray.slice(0, count);
 };
 
-const fetchData = (setData: (data: Array<Beer>) => void) => {
+const fetchData = (setData: (data: Beer[]) => void) => {
   const fetchFromNetwork = async () => {
     try {
       const { data } = await getRandomBeerList();
