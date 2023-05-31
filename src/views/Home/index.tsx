@@ -34,12 +34,12 @@ const Home = () => {
   }, [beerList, searchTerm]);
 
   const handleBeerSelect = (
-    e: ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement>,
     beer: Beer
   ) => {
     const newSavedList = { ...savedList };
   
-    if (e.target.checked) {
+    if (event.target.checked) {
       newSavedList[beer.id] = beer;
     } else {
       delete newSavedList[beer.id];
@@ -75,7 +75,7 @@ const Home = () => {
                 <TextField
                   label='Search by name'
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => setSearchTerm(event.target.value)}
                 />
                 <Button variant='contained' onClick={handleReloadClick}>Reload list</Button>
               </div>
@@ -84,7 +84,7 @@ const Home = () => {
                   <li key={index.toString()}>
                     <Checkbox 
                       checked={Object.keys(savedList).includes(beer.id)}
-                      onChange={(e) => handleBeerSelect(e, beer)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleBeerSelect(event, beer)}
                     />
                     <Link component={RouterLink} to={`/beer/${beer.id}`}>
                       {beer.name}
@@ -108,7 +108,7 @@ const Home = () => {
                   <li key={index.toString()}>
                     <Checkbox
                       checked={true}
-                      onChange={(e) => handleBeerSelect(e, beer)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleBeerSelect(event, beer)}
                     />
                     <Link component={RouterLink} to={`/beer/${beer.id}`}>
                       {beer.name}
