@@ -4,11 +4,11 @@ import { Beer } from '../../types';
 import { Link as RouterLink } from 'react-router-dom';
 import { Button, Checkbox, Paper, TextField, Link } from '@mui/material';
 import styles from './Home.module.css';
-import { SAVED_BEERS_KEY } from './constants'
+import { FAVOURITE_BEERS_KEY } from './constants'
 
 const Home = () => {
   const [beerList, setBeerList] = useState<Beer[]>([]);
-  const [savedList, setSavedList] = useState<{ [key: string]: Beer }>({});
+  const [favouriteList, setFavouriteList] = useState<{ [key: string]: Beer }>({});
   const [filteredBeerList, setFilteredBeerList] = useState<Beer[]>(beerList)
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -17,12 +17,12 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    const initialSavedList = () => {
-      const data = JSON.parse(localStorage.getItem(SAVED_BEERS_KEY) || '{}');
-      setSavedList(data);
+    const initialFavouriteList = () => {
+      const data = JSON.parse(localStorage.getItem(FAVOURITE_BEERS_KEY) || '{}');
+      setFavouriteList(data);
     };
 
-    initialSavedList();
+    initialFavouriteList();
   }, []);
 
   useEffect(() => {
@@ -37,27 +37,27 @@ const Home = () => {
     event: ChangeEvent<HTMLInputElement>,
     beer: Beer
   ) => {
-    const newSavedList = { ...savedList };
+    const newFavouriteList = { ...favouriteList };
   
     if (event.target.checked) {
-      newSavedList[beer.id] = beer;
+      newFavouriteList[beer.id] = beer;
     } else {
-      delete newSavedList[beer.id];
+      delete newFavouriteList[beer.id];
     }
   
-    setSavedList(newSavedList);
-    localStorage.setItem(SAVED_BEERS_KEY, JSON.stringify(newSavedList));
+    setFavouriteList(newFavouriteList);
+    localStorage.setItem(FAVOURITE_BEERS_KEY, JSON.stringify(newFavouriteList));
   };
 
-  const removeSavedBeers = () => {
-    localStorage.setItem(SAVED_BEERS_KEY, JSON.stringify({}));
-    setSavedList({});
+  const removeFavouriteBeers = () => {
+    localStorage.setItem(FAVOURITE_BEERS_KEY, JSON.stringify({}));
+    setFavouriteList({});
   };
 
   const handleReloadClick = () => {
     fetchData((updatedBeerList: Beer[]) => {
       const filteredList = updatedBeerList.filter(
-        (beer: Beer) => !Object.keys(savedList).includes(beer.id)
+        (beer: Beer) => !Object.keys(favouriteList).includes(beer.id)
       );
       setBeerList(filteredList);
     });
@@ -83,7 +83,7 @@ const Home = () => {
                 {filteredBeerList.map((beer, index) => (
                   <li key={index.toString()}>
                     <Checkbox 
-                      checked={Object.keys(savedList).includes(beer.id)}
+                      checked={Object.keys(favouriteList).includes(beer.id)}
                       onChange={(event: ChangeEvent<HTMLInputElement>) => handleBeerSelect(event, beer)}
                     />
                     <Link component={RouterLink} to={`/beer/${beer.id}`}>
@@ -99,12 +99,12 @@ const Home = () => {
             <div className={styles.listContainer}>
               <div className={styles.listHeader}>
                 <h3>Favourite beers</h3>
-                <Button variant="contained" size="small" onClick={removeSavedBeers}>
+                <Button variant="contained" size="small" onClick={removeFavouriteBeers}>
                   Remove all beers
                 </Button>
               </div>
               <ul className={styles.list}>
-                {Object.values(savedList).map((beer, index) => (
+                {Object.values(favouriteList).map((beer, index) => (
                   <li key={index.toString()}>
                     <Checkbox
                       checked={true}
@@ -115,7 +115,7 @@ const Home = () => {
                     </Link>
                   </li>
                 ))}
-                {!Object.values(savedList).length && <p>No favourite beers</p>}
+                {!Object.values(favouriteList).length && <p>No favourite beers</p>}
               </ul>
             </div>
           </Paper>
