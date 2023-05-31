@@ -1,4 +1,31 @@
 import { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import { Box, Typography } from '@mui/material';
+
+const OfflineContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  minHeight: '15vh',
+  marginBottom: '1rem',
+  backgroundColor: theme.palette.background.default,
+  boxShadow: theme.shadows[1]
+}));
+
+const OfflineContent = styled('div')({
+  textAlign: 'center',
+});
+
+const OfflineTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+  marginBottom: theme.spacing(2),
+}));
+
+const OfflineMessage = styled(Typography)(({ theme }) => ({
+  fontSize: '1rem',
+  color: theme.palette.text.secondary,
+}));
 
 const Offline = () => {
   const [isOnline, setIsOnline] = useState(true);
@@ -11,22 +38,26 @@ const Offline = () => {
     window.addEventListener('offline', setOffline);
 
     return () => {
-      window.addEventListener('online', setOnline);
-      window.addEventListener('offline', setOffline);
+      window.removeEventListener('online', setOnline);
+      window.removeEventListener('offline', setOffline);
     };
   }, []);
 
-  return isOnline ? null : (
-    <article>
-      <section>
-        <header>
-          <h1>You are offline</h1>
-        </header>
-        <main>
-          <span>App needs internet to start working</span>
-        </main>
-      </section>
-    </article>
+  if (isOnline) {
+    return null;
+  }
+
+  return (
+    <OfflineContainer>
+      <OfflineContent>
+        <OfflineTitle variant="h4">
+          You are offline
+        </OfflineTitle>
+        <OfflineMessage variant="body1">
+          Pages that are stored in the cache will continue to work correctly, for the rest please connect to the Internet.
+        </OfflineMessage>
+      </OfflineContent>
+    </OfflineContainer>
   );
 };
 
