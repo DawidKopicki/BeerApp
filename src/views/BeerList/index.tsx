@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Beer } from '../../types';
-import { fetchData } from './utils';
+import { capitalizeFirstLetter, fetchData } from './utils';
 import { Avatar, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 import SportsBar from '@mui/icons-material/SportsBar';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +30,7 @@ const BeerList = () => {
                     <SportsBar />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={name} secondary={brewery_type} />
+                <ListItemText primary={name} secondary={capitalizeFirstLetter(brewery_type)} />
               </ListItemButton>
             ))}
           </List>
