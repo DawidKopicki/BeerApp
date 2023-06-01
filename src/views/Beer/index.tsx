@@ -49,9 +49,7 @@ const Beer = () => {
     fetchData(setBeer, id);
   }, [id]);
 
-  if (!beer) {
-    return null;
-  }
+  if (!beer) return null;
 
   const { name, longitude, latitude, brewery_type, city, state, country, website_url, phone } = beer;
 

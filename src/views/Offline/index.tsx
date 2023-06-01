@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const OfflineContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -28,10 +28,10 @@ const OfflineMessage = styled(Typography)(({ theme }) => ({
 }));
 
 const Offline = () => {
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState<boolean>(true);
 
-  const setOnline = () => setIsOnline(true);
-  const setOffline = () => setIsOnline(false);
+  const setOnline = (): void => setIsOnline(true);
+  const setOffline = (): void => setIsOnline(false);
 
   useEffect(() => {
     window.addEventListener('online', setOnline);
@@ -43,9 +43,7 @@ const Offline = () => {
     };
   }, []);
 
-  if (isOnline) {
-    return null;
-  }
+  if (isOnline) return null;
 
   return (
     <OfflineContainer>

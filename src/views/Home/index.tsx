@@ -29,11 +29,11 @@ const Home = () => {
   const [filteredBeerList, setFilteredBeerList] = useState<Beer[]>(beerList);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  useEffect(() => {
+  useEffect((): void => {
     fetchData(setBeerList);
   }, []);
 
-  useEffect(() => {
+  useEffect((): void => {
     const initialFavouriteList = () => {
       const data = JSON.parse(localStorage.getItem(FAVOURITE_BEERS_KEY) || '{}');
       setFavouriteList(data);
@@ -42,13 +42,13 @@ const Home = () => {
     initialFavouriteList();
   }, []);
 
-  useEffect(() => {
+  useEffect((): void => {
     setFilteredBeerList(
       beerList.filter((beer: Beer) => beer.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [beerList, searchTerm]);
 
-  const handleBeerSelect = (event: ChangeEvent<HTMLInputElement>, beer: Beer) => {
+  const handleBeerSelect = (event: ChangeEvent<HTMLInputElement>, beer: Beer): void => {
     const newFavouriteList = { ...favouriteList };
 
     if (event.target.checked) {
@@ -61,12 +61,12 @@ const Home = () => {
     localStorage.setItem(FAVOURITE_BEERS_KEY, JSON.stringify(newFavouriteList));
   };
 
-  const removeFavouriteBeers = () => {
+  const removeFavouriteBeers = (): void => {
     localStorage.setItem(FAVOURITE_BEERS_KEY, JSON.stringify({}));
     setFavouriteList({});
   };
 
-  const handleReloadClick = () => {
+  const handleReloadClick = (): void => {
     fetchData((updatedBeerList: Beer[]) => {
       const filteredList = updatedBeerList.filter(
         (beer: Beer) => !Object.keys(favouriteList).includes(beer.id)

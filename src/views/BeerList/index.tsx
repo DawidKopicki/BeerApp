@@ -38,9 +38,9 @@ const BeerList = () => {
   const [filterByType, setFilterByType] = useState<string | Filter.ALL>(Filter.ALL);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const uniqueBreweryTypes = uniq(beerList.map(({ brewery_type }: Beer) => brewery_type));
+  const uniqueBreweryTypes: string[] = uniq(beerList.map(({ brewery_type }: Beer) => brewery_type));
 
-  const filteredBeerList = useMemo(() => {
+  const filteredBeerList = useMemo((): Beer[] => {
     if (filterByType === Filter.ALL) {
       return beerList;
     } else {
@@ -48,7 +48,7 @@ const BeerList = () => {
     }
   }, [beerList, filterByType]);
 
-  const searchFilteredBeerList = useMemo(() => {
+  const searchFilteredBeerList = useMemo((): Beer[] => {
     if (searchTerm === '') {
       return filteredBeerList;
     } else {
@@ -69,9 +69,9 @@ const BeerList = () => {
     fetchData(setBeerList);
   }, []);
 
-  const modifiedBeerList = calculateModifiedBeerList();
+  const modifiedBeerList: Beer[] = calculateModifiedBeerList();
 
-  const onBeerClick = (id: string) => navigate(`/beer/${id}`);
+  const onBeerClick = (id: string): void => navigate(`/beer/${id}`);
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, currentPage: number): void => {
     setPaginationConfig((prevConfig) => ({
