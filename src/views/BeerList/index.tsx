@@ -1,29 +1,22 @@
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { orderBy, uniq } from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import { Beer, FIELD, SORT } from '../../types';
+import SelectInput from '../../components/SelectInput';
+import SearchInput from '../../components/SearchInput';
+import { Filter, SortDirection, sortByOptions, sortDirectionOptions } from './constants';
+import { Beer, FIELD, SORT, PaginationConfig } from '../../types';
 import { capitalizeFirstLetter, fetchData } from './utils';
 import {
   Avatar,
-  FormControl,
-  InputLabel,
   List,
   ListItemAvatar,
   ListItemButton as MuiListItemButton,
   ListItemText,
-  MenuItem,
-  Select,
   SelectChangeEvent,
-  TablePagination,
-  TextField
+  TablePagination
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SportsBar from '@mui/icons-material/SportsBar';
-
-enum SortDirection {
-  ASC = 'ASC',
-  DESC = 'DESC'
-}
 
 const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
   '&:hover': {
@@ -36,19 +29,19 @@ const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
 const BeerList = () => {
   const navigate = useNavigate();
   const [beerList, setBeerList] = useState<Beer[]>([]);
-  const [paginationConfig, setPaginationConfig] = useState({
+  const [paginationConfig, setPaginationConfig] = useState<PaginationConfig>({
     currentPage: 0,
     itemsPerPage: 10
   });
   const [sortOrder, setSortOrder] = useState<SortDirection>(SortDirection.ASC);
-  const [sortBy, setSortBy] = useState<FIELD>('name');
-  const [filterByType, setFilterByType] = useState<string | 'all'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<FIELD | string>('name');
+  const [filterByType, setFilterByType] = useState<string | Filter.ALL>(Filter.ALL);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const uniqueBreweryTypes = uniq(beerList.map(({ brewery_type }: Beer) => brewery_type));
 
   const filteredBeerList = useMemo(() => {
-    if (filterByType === 'all') {
+    if (filterByType === Filter.ALL) {
       return beerList;
     } else {
       return beerList.filter(({ brewery_type }: Beer) => brewery_type === filterByType);
@@ -71,7 +64,6 @@ const BeerList = () => {
 
     return sortedList.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
   }, [searchFilteredBeerList, paginationConfig, sortOrder, sortBy]);
-
 
   useEffect((): void => {
     fetchData(setBeerList);
@@ -99,8 +91,8 @@ const BeerList = () => {
     setSortOrder((prevOrder) => (prevOrder === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC));
   };
 
-  const handleSortByChange = (event: SelectChangeEvent<FIELD>): void => {
-    setSortBy(event.target.value as FIELD);
+  const handleSortByChange = (event: SelectChangeEvent<FIELD | string>): void => {
+    setSortBy(event.target.value);
   };
 
   const handleTypeFilterChange = (event: SelectChangeEvent<string>): void => {
@@ -122,50 +114,32 @@ const BeerList = () => {
           <h1>BeerList page</h1>
         </header>
         <main>
-        <FormControl sx={{ width: 200, mr: 1 }}>
-          <TextField
-            id="search"
-            label="Search by name"
-            value={searchTerm}
-            onChange={handleSearchTermChange}
+         <SearchInput value={searchTerm} onChange={handleSearchTermChange} />
+
+          <SelectInput
+            label="Brewery Type"
+            value={filterByType}
+            onChange={handleTypeFilterChange}
+            options={[
+              { value: Filter.ALL, label: 'All' },
+              ...uniqueBreweryTypes.map((type) => ({ value: type, label: capitalizeFirstLetter(type) })),
+            ]}
           />
-        </FormControl>
-        <FormControl sx={{ width: 120, mr: 1 }}>
-          <InputLabel id="brewery-type-label">Brewery Type</InputLabel>
-          <Select labelId="brewery-type-label" value={filterByType} onChange={handleTypeFilterChange} label="Brewery Type">
-            <MenuItem value="all">All</MenuItem>
-            {uniqueBreweryTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {capitalizeFirstLetter(type)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ width: 120, mr: 1 }}>
-            <InputLabel id="sort-by-label">Sort By</InputLabel>
-            <Select
-              labelId="sort-by-label"
-              value={sortBy}
-              onChange={handleSortByChange}
-              label="Sort By"
-            >
-              <MenuItem value="name">Name</MenuItem>
-              <MenuItem value="brewery_type">Brewery Type</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: 120 }}>
-            <InputLabel id="sort-order-label">Sort Order</InputLabel>
-            <Select
-              labelId="sort-order-label"
-              value={sortOrder}
-              onChange={handleSortOrderChange}
-              label="Sort Order"
-              renderValue={(selected) => selected} 
-            >
-              <MenuItem value={SortDirection.ASC}>ASC</MenuItem>
-              <MenuItem value={SortDirection.DESC}>DESC</MenuItem>
-            </Select>
-          </FormControl>
+
+          <SelectInput
+            label="Sort By"
+            value={sortBy}
+            onChange={handleSortByChange}
+            options={sortByOptions}
+          />
+
+          <SelectInput
+            label="Sort Order"
+            value={sortOrder}
+            onChange={handleSortOrderChange}
+            options={sortDirectionOptions}
+            renderValue={(selected) => selected}
+          />
           <List>
             {modifiedBeerList.map(({ id, name, brewery_type }) => (
               <ListItemButton key={id} onClick={() => onBeerClick(id)}>
